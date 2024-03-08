@@ -1,10 +1,16 @@
 import React from 'react'
-import Loader from '../Components/Loader'
+import { Outlet } from 'react-router-dom'
+import { NavLink} from 'react-router-dom'
 
 const Home = () => {
   return (
     <>
-    <div>Home</div>
+    <div className='flex items-center gap-4 text-2xl my-8 mx-4 text-blue-500'>
+        <NavLink className={({isActive}) => isActive ? 'underline underline-offset-2':''} end to='.'>Dashboard</NavLink>
+        <NavLink className={({isActive}) => isActive ? 'underline underline-offset-2':''} to='income'>Income</NavLink>
+        <NavLink className={({isActive}) => isActive ? 'underline underline-offset-2':''} to='expenses'>Expenses</NavLink>
+    </div>
+    <Outlet/>
     </>
   )
 }

@@ -5,12 +5,16 @@ import Register from "./Pages/Register";
 import { createContext, useEffect, useState } from "react";
 import Login from "./Pages/Login";
 import axios from "axios";
+import Dashboard from "./Pages/Dashboard";
+import Income from "./Pages/Income";
+import Expenses from "./Pages/Expenses";
+import Profile from "./Pages/Profile";
 
 export const GlobalContext = createContext();
 export const backendUrl = "http://localhost:3000";
 
 function App() {
-  const [loggedInUser, setLoggedInUser] = useState({});
+  const [loggedInUser, setLoggedInUser] = useState({}); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const getLoggedInUser = async () => {
@@ -40,7 +44,8 @@ function App() {
       console.log(error);
     }
   };
-  
+
+
   useEffect(() => {
     getLoggedInUser();
   }, [isLoggedIn]);
@@ -58,10 +63,15 @@ function App() {
       >
         <Router>
           <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="register" element={<Register />} />
-              <Route path="login" element={<Login />} />
+            <Route path="/" element={<Layout/>}>
+                <Route path="/" element={<Home/>}>
+                  <Route index element={<Dashboard/>}/>
+                  <Route path="income" element={<Income/>}/>
+                  <Route path="expenses" element={<Expenses/>}/>
+                </Route>
+                <Route path="register" element={<Register />} />
+                <Route path="login" element={<Login />} />
+                <Route path="profile" element={<Profile/>}/>
             </Route>
           </Routes>
         </Router>
