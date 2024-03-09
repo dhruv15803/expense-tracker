@@ -3,6 +3,7 @@ import { GlobalContext, backendUrl } from "../App";
 import { FaEdit } from "react-icons/fa";
 import axios from "axios";
 import bcrypt from "bcryptjs";
+import { TailSpin } from "react-loader-spinner";
 
 const Profile = () => {
   const { loggedInUser, setLoggedInUser } = useContext(GlobalContext);
@@ -15,6 +16,9 @@ const Profile = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [passwordUpdateMsg,setPasswordUpdateMsg] = useState("");
   const [usernameUpdateMsg,setUsernameUpdateMsg] = useState("");
+  const [newAvatar,setNewAvatar] = useState("");
+  const [isLoadingAvatar,setIsLoadingAvatar] = useState(false);
+
   console.log(loggedInUser);
 
   const editUsername = async () => {
@@ -74,10 +78,33 @@ const Profile = () => {
     }
   };
 
+  const editAvatar = async () => {
+try {
+      setIsLoadingAvatar(true);
+      const response = await axios.patch(`${backendUrl}/user/editAvatar`,{
+        newAvatar,
+      },{withCredentials:true,headers:{
+        'Content-Type':"multipart/form-data"
+      }})
+      console.log(response);
+      if(response.status===200){
+        setIsLoadingAvatar(false);
+        setLoggedInUser(response.data.user);
+      }
+} catch (error) {
+  setIsLoadingAvatar(false);
+  console.log(error);
+}
+  }
+
   const checkPassword = async () => {
     const isCorrect = await bcrypt.compare(currPassword, loggedInUser.password);
     setIsPasswordCorrect(isCorrect);
   };
+
+  useEffect(() => {
+    editAvatar();
+  },[newAvatar])
 
   useEffect(() => {
     checkPassword();
@@ -86,16 +113,32 @@ const Profile = () => {
     <>
       <div className=" border-2 flex flex-col m-4 p-2 gap-4 rounded-xl shadow-lg">
         <div className="flex items-center justify-center mb-10">
-          <img
-            className="rounded-full"
+          {isLoadingAvatar ? <><div className="flex items-center gap-2">
+          <TailSpin
+  visible={true}
+  height="80"
+  width="80"
+  color="#4290f5"
+  ariaLabel="tail-spin-loading"
+  radius="1"
+  wrapperStyle={{}}
+  wrapperClass=""
+  />
+  <p className="text-blue-500">Loading...</p>
+            </div></>:<img
+            className="rounded-full w-44"
             src={loggedInUser?.avatar}
             alt="profile-image"
-          />
+          />}
+        </div>
+        <div className="mx-10 my-2">
+          <label className="border-2 rounded-lg p-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white hover:duration-300" htmlFor="newAvatar">edit avatar</label>
+          <input className="hidden" onChange={(e) => setNewAvatar(e.target.files[0])} type="file" name="newAvatar" id="newAvatar"/>
         </div>
         <div className="flex items-center text-xl gap-2 mx-10">
           <p>Email:</p>
           <p>{loggedInUser.email}</p>
-        </div>
+        </div>  
         <div className="flex items-center text-xl gap-2 mx-10">
           <p>Username</p>
           <p>{loggedInUser.username}</p>
