@@ -16,6 +16,7 @@ export const backendUrl = "http://localhost:3000";
 function App() {
   const [loggedInUser, setLoggedInUser] = useState({}); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [expenses,setExpenses] = useState([]);
 
   const getLoggedInUser = async () => {
     try {
@@ -59,6 +60,8 @@ function App() {
           setIsLoggedIn,
           isLoggedIn,
           logoutUser,
+          expenses,
+          setExpenses,
         }}
       >
         <Router>
