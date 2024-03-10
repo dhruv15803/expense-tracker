@@ -119,6 +119,7 @@ const Expenses = () => {
     }
   };
 
+
   console.log(expenses);
 
   useEffect(() => {
@@ -131,7 +132,8 @@ const Expenses = () => {
       <button className="hover:underline hover:underline-offset-2" onClick={() => setIsAddExpense(!isAddExpense)}>{isAddExpense ? 'Cancel':'Add expense'}</button>
     </div>
     {isAddExpense && <>
-      <form
+    <div className="border-2 mx-8 p-4 rounded-lg shadow-xl">
+    <form
         className="flex gap-4 items-center my-4 mx-10"
         onSubmit={addExpenseCategory}
       >
@@ -224,10 +226,11 @@ const Expenses = () => {
           </button>
         </form>
       </div>
+    </div>
     </>}
       <div className="flex flex-col gap-2 my-4 mx-10">
         <div className="text-2xl text-blue-500 font-semibold">Your expenses</div>
-        {expenses?.map((item, i) => {
+        {expenses?.map((item) => {
           return (
             <ExpenseCard
               key={item._id}
@@ -237,6 +240,11 @@ const Expenses = () => {
               expenseDate={item.expenseDate}
               deleteExpense={deleteExpense}
               expenseCategoryId={item.expenseCategoryId}
+              setExpenseTitle={setExpenseTitle}
+              setExpenseAmount={setExpenseAmount}
+              setExpenseDate={setExpenseDate}
+              setExpenseCategory={setExpenseCategory}
+              expenseCategories={expenseCategories}
             />
           );
         })}
