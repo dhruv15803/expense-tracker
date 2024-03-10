@@ -14,9 +14,9 @@ export const GlobalContext = createContext();
 export const backendUrl = "http://localhost:3000";
 
 function App() {
-  const [loggedInUser, setLoggedInUser] = useState({}); 
+  const [loggedInUser, setLoggedInUser] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [expenses,setExpenses] = useState([]);
+  const [expenses, setExpenses] = useState([]);
 
   const getLoggedInUser = async () => {
     try {
@@ -46,6 +46,22 @@ function App() {
     }
   };
 
+  const getAllExpenses = async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/expense/getAllExpenses`, {
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        setExpenses(response.data.expenses);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(()=>{
+    getAllExpenses();
+  },[])
 
   useEffect(() => {
     getLoggedInUser();
@@ -66,15 +82,15 @@ function App() {
       >
         <Router>
           <Routes>
-            <Route path="/" element={<Layout/>}>
-                <Route path="/" element={<Home/>}>
-                  <Route index element={<Dashboard/>}/>
-                  <Route path="income" element={<Income/>}/>
-                  <Route path="expenses" element={<Expenses/>}/>
-                </Route>
-                <Route path="register" element={<Register />} />
-                <Route path="login" element={<Login />} />
-                <Route path="profile" element={<Profile/>}/>
+            <Route path="/" element={<Layout />}>
+              <Route path="/" element={<Home />}>
+                <Route index element={<Dashboard />} />
+                <Route path="income" element={<Income />} />
+                <Route path="expenses" element={<Expenses />} />
+              </Route>
+              <Route path="register" element={<Register />} />
+              <Route path="login" element={<Login />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
           </Routes>
         </Router>
