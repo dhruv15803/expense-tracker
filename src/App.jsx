@@ -17,6 +17,7 @@ function App() {
   const [loggedInUser, setLoggedInUser] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [expenses, setExpenses] = useState([]);
+  const [totalExpense,setTotalExpense] = useState(0);
 
   const getLoggedInUser = async () => {
     try {
@@ -59,8 +60,18 @@ function App() {
     }
   };
 
-  console.log(expenses);
   
+  const getTotalExpense = () => {
+    let total = 0;
+    for(let i=0; i < expenses.length;i++){
+      total+= expenses[i].expenseAmount;
+    }
+    setTotalExpense(total);
+  }
+
+  useEffect(() => {
+    getTotalExpense();
+  },[expenses])
 
   useEffect(() => {
     getAllExpenses();
@@ -78,6 +89,8 @@ function App() {
           logoutUser,
           expenses,
           setExpenses,
+          totalExpense,
+          setTotalExpense,
         }}
       >
         <Router>

@@ -10,11 +10,15 @@ const Expenses = () => {
   const [expenseCategories, setExpenseCategories] = useState([]);
   const [expenseCategoryMsg, setExpenseCategoryMsg] = useState("");
   const [expenseCategory, setExpenseCategory] = useState("");
-  const { expenses, setExpenses } = useContext(GlobalContext);
+  const { expenses, setExpenses,totalExpense} = useContext(GlobalContext);
   const [expenseMsg, setExpenseMsg] = useState("");
   const [expenseDate, setExpenseDate] = useState("");
   const [isAddExpense,setIsAddExpense] = useState(false);
   const [expenseFilterCategoryId,setExpenseFilterCategoryId] = useState("none");
+  const [totalExpenseByCategory,setTotalExpenseByCategory] = useState(0);
+
+
+
 
   const addExpenseCategory = async (e) => {
     try {
@@ -119,9 +123,19 @@ const Expenses = () => {
     }
   };
 
+  const getTotalExpenseByCategory = () => {
+    let total = 0;
+    for(let i=0;i<expenses.length;i++){
+      if(expenses[i].expenseCategoryId===expenseFilterCategoryId){
+        total+=expenses[i].expenseAmount;
+      }
+    }
+    setTotalExpenseByCategory(total);
+  }
 
-  console.log(expenseFilterCategoryId);
-  console.log(expenses);
+  useEffect(()=>{
+    getTotalExpenseByCategory();
+  },[expenseFilterCategoryId,expenses])
 
   useEffect(() => {
     getExpenseCategories();
@@ -260,6 +274,20 @@ const Expenses = () => {
             />
           );
         })}
+        { expenses?.filter((expense)=> {
+          if(expenseFilterCategoryId==="none"){
+            return expense;
+          } else {
+            return expense.expenseCategoryId===expenseFilterCategoryId;
+          }
+        }).length!==0 && <div className="p-2 border-2 rounded-lg my-4 mx-10 shadow-lg flex items-center">
+          {expenseFilterCategoryId!=="none" && <div className="text-blue-500 text-xl">
+            Total expense(by category): {totalExpenseByCategory}
+          </div>}
+          {expenseFilterCategoryId==="none" && <div className="text-blue-500 text-xl">
+            Total expense : {totalExpense}
+            </div>}
+        </div>}
         {expenses?.filter((expense)=>{
           if(expenseFilterCategoryId==="none"){
             return expense;
