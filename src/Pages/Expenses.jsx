@@ -16,9 +16,11 @@ const Expenses = () => {
   const [isAddExpense, setIsAddExpense] = useState(false);
   const [expenseFilterCategoryId, setExpenseFilterCategoryId] =
     useState("none");
+  const [expenseFilterCategoryName, setExpenseFilterCategoryName] =
+    useState("none");
   const [totalExpenseByCategory, setTotalExpenseByCategory] = useState(0);
-  const [isSortExpense,setIsSortExpense] = useState(true);
-  const [isSortDate,setIsSortDate] = useState(false);
+  const [isSortExpense, setIsSortExpense] = useState(true);
+  const [isSortDate, setIsSortDate] = useState(false);
   const [sortExpense, setSortExpense] = useState(0);
   const [sortDate, setSortDate] = useState(0);
 
@@ -171,8 +173,29 @@ const Expenses = () => {
     }
   };
 
+  const getFilterCategoryNameById = async () => {
+    try {
+      if(expenseFilterCategoryId==="none") return;
+      const response = await axios.post(
+        `${backendUrl}/expense/getExpenseCategoryNameById`,
+        {
+          expenseCategoryId: expenseFilterCategoryId,
+        },
+        { withCredentials: true }
+      );
+      if (response.status === 200) {
+        setExpenseFilterCategoryName(response.data.name);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  console.log(typeof expenseFilterCategoryId);
+
   useEffect(() => {
     getTotalExpenseByCategory();
+    getFilterCategoryNameById();
   }, [expenseFilterCategoryId, expenses]);
 
   useEffect(() => {
@@ -318,44 +341,64 @@ const Expenses = () => {
           </select>
         </div>
         <div className="flex items-center gap-2">
-        <p>Sort by expense</p>
-          {!isSortExpense && <>
-          <input checked={isSortExpense} onClick={()=>{
-            setIsSortExpense(true);
-            setIsSortDate(false);
-          }} type="checkbox" name="isSortExpense"/>
-          </>}
-          {isSortExpense && <select
-            value={sortExpense}
-            onChange={(e) => setSortExpense(e.target.value)}
-            className="border-2 rounded-lg p-2"
-            name="sortExpense"
-          >
-            <option value={0}>none</option>
-            {/* ascending order */}
-            <option value={1}>low to high</option>
-            {/* desciending order */}
-            <option value={-1}>high to low</option>
-          </select>}
+          <p>Sort by expense</p>
+          {!isSortExpense && (
+            <>
+              <input
+              readOnly
+                checked={isSortExpense}
+                onClick={() => {
+                  setIsSortExpense(true);
+                  setIsSortDate(false);
+                }}
+                type="checkbox"
+                name="isSortExpense"
+              />
+            </>
+          )}
+          {isSortExpense && (
+            <select
+              value={sortExpense}
+              onChange={(e) => setSortExpense(e.target.value)}
+              className="border-2 rounded-lg p-2"
+              name="sortExpense"
+            >
+              <option value={0}>none</option>
+              {/* ascending order */}
+              <option value={1}>low to high</option>
+              {/* desciending order */}
+              <option value={-1}>high to low</option>
+            </select>
+          )}
         </div>
         <div className="flex items-center gap-2">
-        <p>Sort by date</p>
-          {!isSortDate && <>
-          <input checked={isSortDate} onClick={()=>{
-            setIsSortDate(true);
-            setIsSortExpense(false);
-          }} type="checkbox" name="isSortDate"/>
-          </>}
-          {isSortDate && <select
-            className="border-2 rounded-lg p-2"
-            value={sortDate}
-            onChange={(e) => setSortDate(e.target.value)}
-            name="sortDate"
-          >
-            <option value={0}>none</option>
-            <option value={1}>oldest to newest</option>
-            <option value={-1}>newest to oldest</option>
-          </select>}
+          <p>Sort by date</p>
+          {!isSortDate && (
+            <>
+              <input
+              readOnly
+                checked={isSortDate}
+                onClick={() => {
+                  setIsSortDate(true);
+                  setIsSortExpense(false);
+                }}
+                type="checkbox"
+                name="isSortDate"
+              />
+            </>
+          )}
+          {isSortDate && (
+            <select
+              className="border-2 rounded-lg p-2"
+              value={sortDate}
+              onChange={(e) => setSortDate(e.target.value)}
+              name="sortDate"
+            >
+              <option value={0}>none</option>
+              <option value={1}>oldest to newest</option>
+              <option value={-1}>newest to oldest</option>
+            </select>
+          )}
         </div>
       </div>
       <div className="flex flex-col gap-2 my-4 mx-10">
@@ -394,12 +437,13 @@ const Expenses = () => {
           <div className="p-2 border-2 rounded-lg my-4 mx-10 shadow-lg flex items-center">
             {expenseFilterCategoryId !== "none" && (
               <div className="text-blue-500 text-xl">
-                Total expense(by category): {totalExpenseByCategory}
-              </div>
+                Total expense({expenseFilterCategoryName}):{" "}
+                {totalExpenseByCategory} Rs
+              </div> 
             )}
             {expenseFilterCategoryId === "none" && (
               <div className="text-blue-500 text-xl">
-                Total expense : {totalExpense}
+                Total expense : {totalExpense} Rs
               </div>
             )}
           </div>

@@ -1,9 +1,25 @@
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GlobalContext } from "../App";
 
 const Navbar = () => {
-  const { loggedInUser, isLoggedIn, logoutUser } = useContext(GlobalContext);
+  const { loggedInUser, isLoggedIn,setLoggedInUser,setIsLoggedIn} = useContext(GlobalContext);
+  const navigate = useNavigate();
+
+  const logoutUser = async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/user/logoutUser`, {
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        setLoggedInUser({});
+        setIsLoggedIn(false);
+        navigate('/');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>

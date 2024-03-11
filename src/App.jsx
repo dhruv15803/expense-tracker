@@ -33,20 +33,6 @@ function App() {
     }
   };
 
-  const logoutUser = async () => {
-    try {
-      const response = await axios.get(`${backendUrl}/user/logoutUser`, {
-        withCredentials: true,
-      });
-      if (response.status === 200) {
-        setLoggedInUser({});
-        setIsLoggedIn(false);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const getAllExpenses = async () => {
     try {
       const response = await axios.get(`${backendUrl}/expense/getAllExpenses`, {
@@ -86,7 +72,6 @@ function App() {
           setLoggedInUser,
           setIsLoggedIn,
           isLoggedIn,
-          logoutUser,
           expenses,
           setExpenses,
           totalExpense,
