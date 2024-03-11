@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect,useState } from "react";
 import { GlobalContext, backendUrl } from "../App";
 import ExpenseCard from "../Components/ExpenseCard";
 
@@ -14,7 +14,7 @@ const Expenses = () => {
   const [expenseMsg, setExpenseMsg] = useState("");
   const [expenseDate, setExpenseDate] = useState("");
   const [isAddExpense,setIsAddExpense] = useState(false);
-
+  const [expenseFilterCategoryId,setExpenseFilterCategoryId] = useState("none");
 
   const addExpenseCategory = async (e) => {
     try {
@@ -120,6 +120,7 @@ const Expenses = () => {
   };
 
 
+  console.log(expenseFilterCategoryId);
   console.log(expenses);
 
   useEffect(() => {
@@ -228,9 +229,24 @@ const Expenses = () => {
       </div>
     </div>
     </>}
+    <div className="border-2 gap-2 mx-10 my-4 flex items-center p-2 rounded-lg shadow-lg">
+      <p>Filter by category</p>
+      <select className="border-2 rounded-lg p-2" value={expenseFilterCategoryId} onChange={(e) => setExpenseFilterCategoryId(e.target.value)} name="expenseFilterCategoryId">
+        <option value="none">none</option>
+        {expenseCategories?.map((item)=>{
+          return <option key={item._id} value={item._id}>{item.name}</option>
+        })}
+      </select>
+    </div>
       <div className="flex flex-col gap-2 my-4 mx-10">
         <div className="text-2xl text-blue-500 font-semibold">Your expenses</div>
-        {expenses?.map((item) => {
+        { expenses?.filter((expense)=> {
+          if(expenseFilterCategoryId==="none"){
+            return expense;
+          } else {
+            return expense.expenseCategoryId===expenseFilterCategoryId;
+          }
+        })?.map((item) => {
           return (
             <ExpenseCard
               key={item._id}
@@ -240,15 +256,17 @@ const Expenses = () => {
               expenseDate={item.expenseDate}
               deleteExpense={deleteExpense}
               expenseCategoryId={item.expenseCategoryId}
-              setExpenseTitle={setExpenseTitle}
-              setExpenseAmount={setExpenseAmount}
-              setExpenseDate={setExpenseDate}
-              setExpenseCategory={setExpenseCategory}
               expenseCategories={expenseCategories}
             />
           );
         })}
-        {expenses.length===0 && <>
+        {expenses?.filter((expense)=>{
+          if(expenseFilterCategoryId==="none"){
+            return expense;
+          } else{
+            return expense.expenseCategoryId===expenseFilterCategoryId;
+          }
+        }).length===0 && <>
         <div className="my-[40%] flex items-center text-blue-500 justify-center text-4xl font-semibold">
           You have no current expenses
         </div>

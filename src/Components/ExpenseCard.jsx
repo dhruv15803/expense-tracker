@@ -15,11 +15,12 @@ const ExpenseCard = ({
   const [expenseCategory, setExpenseCategory] = useState("");
   const [isEditExpense, setIsEditExpense] = useState(false);
   const [editExpenseId, setEditExpenseId] = useState(null);
-  const [newExpenseTitle,setNewExpenseTitle] = useState("");
-  const [newExpenseAmount,setNewExpenseAmount] = useState("");
-  const [newExpenseDate,setNewExpenseDate] = useState("");
-  const [newExpenseCategory,setNewExpenseCategory] = useState("");
-  const {expenses,setExpenses} = useContext(GlobalContext);
+  const [newExpenseTitle, setNewExpenseTitle] = useState("");
+  const [newExpenseAmount, setNewExpenseAmount] = useState("");
+  const [newExpenseDate, setNewExpenseDate] = useState("");
+  const [newExpenseCategory, setNewExpenseCategory] = useState("");
+  const { expenses, setExpenses } = useContext(GlobalContext);
+
 
   const getExpenseCategoryNameById = async () => {
     try {
@@ -40,25 +41,33 @@ const ExpenseCard = ({
   };
 
   const updateExpense = async () => {
-    const response = await axios.patch(`${backendUrl}/expense/updateExpense`,{
-        "id":editExpenseId,
-        newExpenseTitle,
-        newExpenseAmount,
-        newExpenseDate,
-        newExpenseCategory,
-    },{withCredentials:true})
-    if(response.status===200){
-        const newExpenses = expenses.map((item,i)=>{
-            if(item._id===editExpenseId){
-                return response.data.newExpense;
-            } else{
-                return item;
-            }
-        })
+    try {
+      const response = await axios.patch(
+        `${backendUrl}/expense/updateExpense`,
+        {
+          id: editExpenseId,
+          newExpenseTitle,
+          newExpenseAmount,
+          newExpenseDate,
+          newExpenseCategory,
+        },
+        { withCredentials: true }
+      );
+      if (response.status === 200) {
+        const newExpenses = expenses.map((item, i) => {
+          if (item._id === editExpenseId) {
+            return response.data.newExpense;
+          } else {
+            return item;
+          }
+        });
         setExpenses(newExpenses);
         setIsEditExpense(false);
+      }
+    } catch (error) {
+      console.log(error);
     }
-  }
+  };
 
   const editExpense = async (id) => {
     setIsEditExpense(true);
@@ -111,11 +120,19 @@ const ExpenseCard = ({
           <div className="flex flex-wrap w-[30%]">
             {isEditExpense ? (
               <>
-              <select value={newExpenseCategory} onChange={(e) => setNewExpenseCategory(e.target.value)} name="newExpenseCategory">
-                {expenseCategories?.map((item)=>{
-                    return <option key={item._id} value={item.name}>{item.name}</option>
-                })}
-              </select>
+                <select
+                  value={newExpenseCategory}
+                  onChange={(e) => setNewExpenseCategory(e.target.value)}
+                  name="newExpenseCategory"
+                >
+                  {expenseCategories?.map((item) => {
+                    return (
+                      <option key={item._id} value={item.name}>
+                        {item.name}
+                      </option>
+                    );
+                  })}
+                </select>
               </>
             ) : (
               expenseCategory
@@ -137,20 +154,33 @@ const ExpenseCard = ({
             )}
           </div>
         </div>
-        {isEditExpense ? <>
-        <div className="flex items-center gap-2">
-         <button onClick={updateExpense} className=" w-[25%]  border-2 rounded-lg border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white hover:duration-300 p-2" >submit</button>
-         <button onClick={() => setIsEditExpense(false)}>Cancel</button>
-        </div>
-        </>:
-        <div className="flex items-center gap-4">
-          <button onClick={() => deleteExpense(id)} className="text-xl">
-            <FaTrash />
-          </button>
-          <button onClick={() => editExpense(id)} className="text-xl">
-            <FaRegEdit />
-          </button>
-        </div>}
+        {isEditExpense ? (
+          <>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={updateExpense}
+                className=" w-[25%]  border-2 rounded-lg border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white hover:duration-300 p-2"
+              >
+                submit
+              </button>
+              <button
+                className="border-2 rounded-lg border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white hover:duration-300 p-2 w-[25%]"
+                onClick={() => setIsEditExpense(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center gap-4">
+            <button onClick={() => deleteExpense(id)} className="text-xl">
+              <FaTrash />
+            </button>
+            <button onClick={() => editExpense(id)} className="text-xl">
+              <FaRegEdit />
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

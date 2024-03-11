@@ -59,11 +59,11 @@ function App() {
     }
   };
 
-  useEffect(()=>{
-    getAllExpenses();
-  },[])
+  console.log(expenses);
+  
 
   useEffect(() => {
+    getAllExpenses();
     getLoggedInUser();
   }, [isLoggedIn]);
 
