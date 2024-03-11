@@ -16,8 +16,7 @@ const Expenses = () => {
   const [isAddExpense,setIsAddExpense] = useState(false);
   const [expenseFilterCategoryId,setExpenseFilterCategoryId] = useState("none");
   const [totalExpenseByCategory,setTotalExpenseByCategory] = useState(0);
-
-
+  const [sortExpense,setSortExpense] = useState(0);
 
 
   const addExpenseCategory = async (e) => {
@@ -123,6 +122,19 @@ const Expenses = () => {
     }
   };
 
+  const getSortedExpenses = async ()=>{
+try {
+      const response = await axios.post(`${backendUrl}/expense/getSortedExpenses`,{
+        sortExpense,
+      },{withCredentials:true})
+      if(response.status===200){
+        setExpenses(response.data.expenses);
+      }
+} catch (error) {
+  console.log(error);
+}
+  }
+
   const getTotalExpenseByCategory = () => {
     let total = 0;
     for(let i=0;i<expenses.length;i++){
@@ -133,13 +145,20 @@ const Expenses = () => {
     setTotalExpenseByCategory(total);
   }
 
+
   useEffect(()=>{
     getTotalExpenseByCategory();
   },[expenseFilterCategoryId,expenses])
 
+  useEffect(()=>{
+    getSortedExpenses();
+  },[sortExpense])
+
   useEffect(() => {
     getExpenseCategories();
   }, []);
+
+  console.log(expenses);
 
   return (
     <>
@@ -243,7 +262,8 @@ const Expenses = () => {
       </div>
     </div>
     </>}
-    <div className="border-2 gap-2 mx-10 my-4 flex items-center p-2 rounded-lg shadow-lg">
+    <div className="border-2 gap-8 mx-10 my-4 flex items-center p-2 rounded-lg shadow-lg">
+      <div className="flex items-center gap-2">
       <p>Filter by category</p>
       <select className="border-2 rounded-lg p-2" value={expenseFilterCategoryId} onChange={(e) => setExpenseFilterCategoryId(e.target.value)} name="expenseFilterCategoryId">
         <option value="none">none</option>
@@ -251,6 +271,17 @@ const Expenses = () => {
           return <option key={item._id} value={item._id}>{item.name}</option>
         })}
       </select>
+      </div>
+      <div className="flex items-center gap-2">
+        <p>Sort by expense</p>
+        <select value={sortExpense} onChange={(e) => setSortExpense(e.target.value)} className="border-2 rounded-lg p-2" name="sortExpense">
+          <option value={0}>none</option>
+          {/* ascending order */}
+          <option value={1}>low to high</option> 
+          {/* desciending order */}
+          <option value={-1}>high to low</option>
+        </select>
+      </div>
     </div>
       <div className="flex flex-col gap-2 my-4 mx-10">
         <div className="text-2xl text-blue-500 font-semibold">Your expenses</div>
@@ -274,7 +305,7 @@ const Expenses = () => {
             />
           );
         })}
-        { expenses?.filter((expense)=> {
+        {expenses?.filter((expense)=> {
           if(expenseFilterCategoryId==="none"){
             return expense;
           } else {
