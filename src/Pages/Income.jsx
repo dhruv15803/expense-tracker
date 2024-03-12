@@ -217,6 +217,7 @@ const Income = () => {
               incomeAmount={item.incomeAmount}
               incomeDate={item.incomeDate}
               incomeCategoryId = {item.incomeCategoryId}
+              incomeCategories={incomeCategories}
             />
           );
         })}
