@@ -1,6 +1,6 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { backendUrl } from "../App";
+import React, { useContext, useEffect, useState } from "react";
+import { GlobalContext, backendUrl } from "../App";
 import IncomeCard from "../Components/IncomeCard";
 
 const Income = () => {
@@ -13,7 +13,7 @@ const Income = () => {
   const [incomeDate, setIncomeDate] = useState("");
   const [incomeCategory, setIncomeCategory] = useState("");
   const [incomeCategories, setIncomeCategories] = useState([]);
-  const [incomes, setIncomes] = useState([]);
+  const {incomes,setIncomes} = useContext(GlobalContext);
 
   const addIncomeCategory = async (req, res) => {
     try {
@@ -96,24 +96,10 @@ const Income = () => {
     }
   };
 
-  const getAllIncomes = async () => {
-    try {
-      const response = await axios.get(`${backendUrl}/income/getAllIncomes`, {
-        withCredentials: true,
-      });
-      if (response.status === 200) {
-        setIncomes(response.data.incomes);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   console.log(incomes);
 
   useEffect(() => {
     getIncomeCategories();
-    getAllIncomes();
   }, []);
   return (
     <>
@@ -216,10 +202,17 @@ const Income = () => {
         </>
       )}
       <div className="flex mx-10 flex-col gap-4">
-        {incomes.map((item) => {
+        <div className="my-4 flex items-center text-2xl text-blue-500 font-semibold">
+          Your income
+        </div>
+        {incomes.length===0 && <div className="text-blue-500 text-4xl font-semibold flex justify-center items-center my-28">
+          You have no incomes added
+        </div>}
+        {incomes?.map((item) => {
           return (
             <IncomeCard
               key={item._id}
+              id={item._id}
               incomeTitle={item.incomeTitle}
               incomeAmount={item.incomeAmount}
               incomeDate={item.incomeDate}

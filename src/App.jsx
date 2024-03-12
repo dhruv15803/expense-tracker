@@ -18,6 +18,8 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [expenses, setExpenses] = useState([]);
   const [totalExpense,setTotalExpense] = useState(0);
+  const [incomes, setIncomes] = useState([]);
+
 
   const getLoggedInUser = async () => {
     try {
@@ -46,6 +48,21 @@ function App() {
     }
   };
 
+  const getAllIncomes = async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/income/getAllIncomes`, {
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        setIncomes(response.data.incomes);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  
+
   
   const getTotalExpense = () => {
     let total = 0;
@@ -61,6 +78,7 @@ function App() {
 
   useEffect(() => {
     getAllExpenses();
+    getAllIncomes();
     getLoggedInUser();
   }, [isLoggedIn]);
 
@@ -74,6 +92,8 @@ function App() {
           isLoggedIn,
           expenses,
           setExpenses,
+          incomes,
+          setIncomes,
           totalExpense,
           setTotalExpense,
         }}
