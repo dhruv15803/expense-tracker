@@ -13,7 +13,12 @@ const Income = () => {
   const [incomeDate, setIncomeDate] = useState("");
   const [incomeCategory, setIncomeCategory] = useState("");
   const [incomeCategories, setIncomeCategories] = useState([]);
-  const {incomes,setIncomes} = useContext(GlobalContext);
+  const { incomes, setIncomes } = useContext(GlobalContext);
+  const [incomeFilterCategoryId, setIncomeFilterCategoryId] = useState("none");
+  const [sortIncome, setSortIncome] = useState(0);
+  const [sortIncomeDate, setSortIncomeDate] = useState(0);
+  const [isSortIncomeAmount,setIsSortIncomeAmount] = useState(true);
+  const [isSortIncomeDate,setIsSortIncomeDate] = useState(false);
 
   const addIncomeCategory = async (req, res) => {
     try {
@@ -96,7 +101,47 @@ const Income = () => {
     }
   };
 
-  console.log(incomes);
+  const getSortedIncomes = async () => {
+    try {
+      const response = await axios.post(
+        `${backendUrl}/income/getSortedIncomes`,
+        {
+          sortIncome,
+        },
+        { withCredentials: true }
+      );
+      if (response.status === 200) {
+        setIncomes(response.data.incomes);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getSortedIncomesByDate = async () => {
+    try {
+      const response = await axios.post(
+        `${backendUrl}/income/getSortedIncomesByDate`,
+        {
+          sortIncomeDate,
+        },
+        { withCredentials: true }
+      );
+      if (response.status === 200) {
+        setIncomes(response.data.incomes);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getSortedIncomesByDate();
+  }, [sortIncomeDate]);
+
+  useEffect(() => {
+    getSortedIncomes();
+  }, [sortIncome]);
 
   useEffect(() => {
     getIncomeCategories();
@@ -205,22 +250,88 @@ const Income = () => {
         <div className="my-4 flex items-center text-2xl text-blue-500 font-semibold">
           Your income
         </div>
-        {incomes.length===0 && <div className="text-blue-500 text-4xl font-semibold flex justify-center items-center my-28">
-          You have no incomes added
-        </div>}
-        {incomes?.map((item) => {
-          return (
-            <IncomeCard
-              key={item._id}
-              id={item._id}
-              incomeTitle={item.incomeTitle}
-              incomeAmount={item.incomeAmount}
-              incomeDate={item.incomeDate}
-              incomeCategoryId = {item.incomeCategoryId}
-              incomeCategories={incomeCategories}
-            />
-          );
-        })}
+        <div className=" flex items-center gap-6 border-2 rounded-lg p-2 shadow-lg">
+          <div className="flex items-center gap-2">
+            <p>Filter by category</p>
+            <select
+              value={incomeFilterCategoryId}
+              onChange={(e) => setIncomeFilterCategoryId(e.target.value)}
+              className="border-2 rounded-lg p-2"
+              name="incomeFilterCategoryId"
+            >
+              <option value="none">none</option>
+              {incomeCategories?.map((item) => {
+                return <option value={item._id}>{item.name}</option>;
+              })}
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <p>sort by income amount</p>
+            {!isSortIncomeAmount && <input readOnly onClick={()=>{
+              setIsSortIncomeDate(false);
+              setIsSortIncomeAmount(true);
+            }} type="checkbox" name="" id="" />}
+            {isSortIncomeAmount && <select
+              className="border-2 rounded-lg p-2"
+              value={sortIncome}
+              onChange={(e) => setSortIncome(e.target.value)}
+              name="sortIncome"
+            >
+              <option value={0}>none</option>
+              <option value={1}>low to high</option>
+              <option value={-1}>high to low</option>
+            </select>}
+          </div>
+          <div className="flex items-center gap-2">
+            <p>sort by income date</p>
+            {!isSortIncomeDate && <input readOnly onClick={()=>{
+              setIsSortIncomeAmount(false);
+              setIsSortIncomeDate(true);
+            }} type="checkbox" name="" id="" />}
+            {isSortIncomeDate && <select
+              value={sortIncomeDate}
+              onChange={(e) => setSortIncomeDate(e.target.value)}
+              className="border-2 rounded-lg p-2"
+              name="sortIncomeDate"
+            >
+              <option value={0}>none</option>
+              <option value={1}>oldest to newest</option>
+              <option value={-1}>newest to oldest</option>
+            </select>}
+          </div>
+        </div>
+        {incomes.filter((income) => {
+          if (incomeFilterCategoryId === "none") {
+            return income;
+          } else {
+            return income.incomeCategoryId === incomeFilterCategoryId;
+          }
+        }).length === 0 && (
+          <div className="text-blue-500 text-4xl font-semibold flex justify-center items-center my-28">
+            You have no incomes added
+          </div>
+        )}
+        {incomes
+          ?.filter((income) => {
+            if (incomeFilterCategoryId === "none") {
+              return income;
+            } else {
+              return income.incomeCategoryId === incomeFilterCategoryId;
+            }
+          })
+          ?.map((item) => {
+            return (
+              <IncomeCard
+                key={item._id}
+                id={item._id}
+                incomeTitle={item.incomeTitle}
+                incomeAmount={item.incomeAmount}
+                incomeDate={item.incomeDate}
+                incomeCategoryId={item.incomeCategoryId}
+                incomeCategories={incomeCategories}
+              />
+            );
+          })}
       </div>
     </>
   );
