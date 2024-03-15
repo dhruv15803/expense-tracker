@@ -13,15 +13,14 @@ const Income = () => {
   const [incomeDate, setIncomeDate] = useState("");
   const [incomeCategory, setIncomeCategory] = useState("");
   const [incomeCategories, setIncomeCategories] = useState([]);
-  const { incomes, setIncomes } = useContext(GlobalContext);
+  const { incomes, setIncomes,totalIncome,setTotalIncome} = useContext(GlobalContext);
   const [incomeFilterCategoryId, setIncomeFilterCategoryId] = useState("none");
-  const [incomeFilterCategoryName,setIncomeFilterCategoryName] = useState("none");
+  const [incomeFilterCategoryName, setIncomeFilterCategoryName] =
+    useState("none");
   const [sortIncome, setSortIncome] = useState(0);
   const [sortIncomeDate, setSortIncomeDate] = useState(0);
-  const [isSortIncomeAmount,setIsSortIncomeAmount] = useState(true);
-  const [isSortIncomeDate,setIsSortIncomeDate] = useState(false);
-  const [totalIncome,setTotalIncome] = useState(0);
-  
+  const [isSortIncomeAmount, setIsSortIncomeAmount] = useState(true);
+  const [isSortIncomeDate, setIsSortIncomeDate] = useState(false);
 
   const addIncomeCategory = async () => {
     try {
@@ -138,26 +137,26 @@ const Income = () => {
     }
   };
 
-  const getTotalIncomes = ()=>{
+  const getTotalIncomes = () => {
     let total = 0;
-    for(let i = 0;i<incomes.length;i++){
-      if(incomeFilterCategoryId==="none"){
-        total+=incomes[i].incomeAmount;
+    for (let i = 0; i < incomes.length; i++) {
+      if (incomeFilterCategoryId === "none") {
+        total += incomes[i].incomeAmount;
       } else {
-        if(incomes[i].incomeCategoryId===incomeFilterCategoryId){
-          total+=incomes[i].incomeAmount;
+        if (incomes[i].incomeCategoryId === incomeFilterCategoryId) {
+          total += incomes[i].incomeAmount;
         }
       }
     }
     setTotalIncome(total);
-  }
+  };
 
   const getIncomeCategoryNameById = async () => {
     try {
       const response = await axios.post(
         `${backendUrl}/income/getIncomeCategoryNameById`,
         {
-          incomeCategoryId:incomeFilterCategoryId,
+          incomeCategoryId: incomeFilterCategoryId,
         },
         { withCredentials: true }
       );
@@ -178,10 +177,10 @@ const Income = () => {
     getSortedIncomes();
   }, [sortIncome]);
 
-  useEffect(()=>{
+  useEffect(() => {
     getTotalIncomes();
     getIncomeCategoryNameById();
-  },[incomes,incomeFilterCategoryId])
+  }, [incomes, incomeFilterCategoryId]);
 
   useEffect(() => {
     getIncomeCategories();
@@ -307,37 +306,57 @@ const Income = () => {
           </div>
           <div className="flex items-center gap-2">
             <p>sort by income amount</p>
-            {!isSortIncomeAmount && <input readOnly onClick={()=>{
-              setIsSortIncomeDate(false);
-              setIsSortIncomeAmount(true);
-            }} type="checkbox" name="" id="" />}
-            {isSortIncomeAmount && <select
-              className="border-2 rounded-lg p-2"
-              value={sortIncome}
-              onChange={(e) => setSortIncome(e.target.value)}
-              name="sortIncome"
-            >
-              <option value={0}>none</option>
-              <option value={1}>low to high</option>
-              <option value={-1}>high to low</option>
-            </select>}
+            {!isSortIncomeAmount && (
+              <input
+                readOnly
+                onClick={() => {
+                  setIsSortIncomeDate(false);
+                  setIsSortIncomeAmount(true);
+                }}
+                type="checkbox"
+                name=""
+                id=""
+              />
+            )}
+            {isSortIncomeAmount && (
+              <select
+                className="border-2 rounded-lg p-2"
+                value={sortIncome}
+                onChange={(e) => setSortIncome(e.target.value)}
+                name="sortIncome"
+              >
+                <option value={0}>none</option>
+                <option value={1}>low to high</option>
+                <option value={-1}>high to low</option>
+              </select>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <p>sort by income date</p>
-            {!isSortIncomeDate && <input readOnly onClick={()=>{
-              setIsSortIncomeAmount(false);
-              setIsSortIncomeDate(true);
-            }} type="checkbox" name="" id="" />}
-            {isSortIncomeDate && <select
-              value={sortIncomeDate}
-              onChange={(e) => setSortIncomeDate(e.target.value)}
-              className="border-2 rounded-lg p-2"
-              name="sortIncomeDate"
-            >
-              <option value={0}>none</option>
-              <option value={1}>oldest to newest</option>
-              <option value={-1}>newest to oldest</option>
-            </select>}
+            {!isSortIncomeDate && (
+              <input
+                readOnly
+                onClick={() => {
+                  setIsSortIncomeAmount(false);
+                  setIsSortIncomeDate(true);
+                }}
+                type="checkbox"
+                name=""
+                id=""
+              />
+            )}
+            {isSortIncomeDate && (
+              <select
+                value={sortIncomeDate}
+                onChange={(e) => setSortIncomeDate(e.target.value)}
+                className="border-2 rounded-lg p-2"
+                name="sortIncomeDate"
+              >
+                <option value={0}>none</option>
+                <option value={1}>oldest to newest</option>
+                <option value={-1}>newest to oldest</option>
+              </select>
+            )}
           </div>
         </div>
         {incomes.filter((income) => {
@@ -372,9 +391,17 @@ const Income = () => {
               />
             );
           })}
-          {incomes.length!==0 && <div className="flex items-enter p-2 text-xl text-blue-500 border-2 shadow-lg rounded-lg">
-            <p>Total income {incomeFilterCategoryId==="none" ? '' : `(${incomeFilterCategoryName})`} : {totalIncome} </p>
-          </div>}
+        {incomes.length !== 0 && (
+          <div className="flex items-enter p-2 text-xl text-blue-500 border-2 shadow-lg rounded-lg">
+            <p>
+              Total income{" "}
+              {incomeFilterCategoryId === "none"
+                ? ""
+                : `(${incomeFilterCategoryName})`}{" "}
+              : {totalIncome}{" "}
+            </p>
+          </div>
+        )}
       </div>
     </>
   );

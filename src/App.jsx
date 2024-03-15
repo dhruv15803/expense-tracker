@@ -18,8 +18,10 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [expenses, setExpenses] = useState([]);
   const [totalExpense,setTotalExpense] = useState(0);
+  const [totalIncome,setTotalIncome] = useState(0);
   const [incomes, setIncomes] = useState([]);
-
+  let funds = 400000;
+  const [currBalance,setCurrBalance] = useState(funds);
 
   const getLoggedInUser = async () => {
     try {
@@ -61,9 +63,14 @@ function App() {
     }
   };
 
-  
+  const getTotalIncomes = ()=>{
+    let total = 0;
+    for(let i=0;i<incomes.length;i++){
+      total+= incomes[i].incomeAmount;
+    }
+    setTotalIncome(total);
+  }
 
-  
   const getTotalExpense = () => {
     let total = 0;
     for(let i=0; i < expenses.length;i++){
@@ -71,6 +78,15 @@ function App() {
     }
     setTotalExpense(total);
   }
+
+  useEffect(()=>{
+    let curr = funds - totalExpense + totalIncome;
+    setCurrBalance(curr);
+  },[totalIncome,totalExpense])
+
+  useEffect(()=>{
+    getTotalIncomes();
+  },[incomes])
 
   useEffect(() => {
     getTotalExpense();
@@ -95,7 +111,11 @@ function App() {
           incomes,
           setIncomes,
           totalExpense,
+          totalIncome,
+          setTotalIncome,
           setTotalExpense,
+          currBalance,
+          setCurrBalance,
         }}
       >
         <Router>

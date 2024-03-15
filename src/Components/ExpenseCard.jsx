@@ -69,6 +69,27 @@ const ExpenseCard = ({
     }
   };
 
+  const deleteExpense = async (id) => {
+    try {
+      const response = await axios.post(
+        `${backendUrl}/expense/deleteExpense`,
+        {
+          id,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(response);
+      if (response.status === 200) {
+        const newExpenses = expenses.filter((expense) => expense._id !== id);
+        setExpenses(newExpenses);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const editExpense = async (id) => {
     setIsEditExpense(true);
     setEditExpenseId(id);
