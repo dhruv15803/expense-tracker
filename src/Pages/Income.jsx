@@ -373,7 +373,7 @@ const Income = () => {
             );
           })}
           {incomes.length!==0 && <div className="flex items-enter p-2 text-xl text-blue-500 border-2 shadow-lg rounded-lg">
-            <p>Total income {incomeFilterCategoryId==="none" ? '' : (incomeFilterCategoryName)} : {totalIncome} </p>
+            <p>Total income {incomeFilterCategoryId==="none" ? '' : `(${incomeFilterCategoryName})`} : {totalIncome} </p>
           </div>}
       </div>
     </>
