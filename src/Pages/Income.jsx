@@ -272,7 +272,7 @@ const Income = () => {
                     id="incomeCategory"
                   >
                     {incomeCategories?.map((item, i) => {
-                      return <option value={item.name}>{item.name}</option>;
+                      return <option key={item._id} value={item.name}>{item.name}</option>;
                     })}
                   </select>
                 </div>
@@ -300,7 +300,7 @@ const Income = () => {
             >
               <option value="none">none</option>
               {incomeCategories?.map((item) => {
-                return <option value={item._id}>{item.name}</option>;
+                return <option key={item._id} value={item._id}>{item.name}</option>;
               })}
             </select>
           </div>
@@ -391,7 +391,13 @@ const Income = () => {
               />
             );
           })}
-        {incomes.length !== 0 && (
+        {incomes.filter(income => {
+          if(incomeFilterCategoryId==="none"){
+            return income;
+          } else {
+            return income.incomeCategoryId===incomeFilterCategoryId;
+          }
+        }).length !== 0 && (
           <div className="flex items-enter p-2 text-xl text-blue-500 border-2 shadow-lg rounded-lg">
             <p>
               Total income{" "}

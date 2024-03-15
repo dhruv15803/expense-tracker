@@ -9,6 +9,7 @@ const Home = () => {
         <NavLink className={({isActive}) => isActive ? 'underline underline-offset-2':''} end to='.'>Dashboard</NavLink>
         <NavLink className={({isActive}) => isActive ? 'underline underline-offset-2':''} to='income'>Income</NavLink>
         <NavLink className={({isActive}) => isActive ? 'underline underline-offset-2':''} to='expenses'>Expenses</NavLink>
+        <NavLink className={({isActive}) => isActive ? 'underline underline-offset-2':''} to='categories'>Categories</NavLink>
     </div>
     <Outlet/>
     </>

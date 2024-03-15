@@ -9,6 +9,7 @@ import Dashboard from "./Pages/Dashboard";
 import Income from "./Pages/Income";
 import Expenses from "./Pages/Expenses";
 import Profile from "./Pages/Profile";
+import Category from "./Pages/Category";
 
 export const GlobalContext = createContext();
 export const backendUrl = "http://localhost:3000";
@@ -20,7 +21,7 @@ function App() {
   const [totalExpense,setTotalExpense] = useState(0);
   const [totalIncome,setTotalIncome] = useState(0);
   const [incomes, setIncomes] = useState([]);
-  let funds = 400000;
+  let funds = 20000;
   const [currBalance,setCurrBalance] = useState(funds);
 
   const getLoggedInUser = async () => {
@@ -124,7 +125,8 @@ function App() {
               <Route path="/" element={<Home />}>
                 <Route index element={<Dashboard />} />
                 <Route path="income" element={<Income />} />
-                <Route path="expenses" element={<Expenses />} />
+                <Route path="expenses" element={<Expenses />}/>
+                <Route path="categories" element={<Category/>}/>
               </Route>
               <Route path="register" element={<Register />} />
               <Route path="login" element={<Login />} />

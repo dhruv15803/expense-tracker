@@ -24,9 +24,9 @@ const Dashboard = () => {
           <p className="text-blue-500">{totalExpense} Rs</p>
         </div>
       </div>
-      <div className="flex items-center gap-2 m-10">
-        <div className="w-[50%]">
-          <Bar
+      <div className="flex items-center gap-2 m-10 justify-center">
+        <div className="border-2 w-[50%]">
+        <Bar
             data={{
               labels: ['current balance',"total income", "total expense"],
               datasets: [

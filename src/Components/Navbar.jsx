@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { GlobalContext } from "../App";
+import { GlobalContext, backendUrl } from "../App";
+import axios from "axios";
 
 const Navbar = () => {
   const { loggedInUser, isLoggedIn,setLoggedInUser,setIsLoggedIn} = useContext(GlobalContext);
