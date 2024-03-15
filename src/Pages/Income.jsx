@@ -15,12 +15,15 @@ const Income = () => {
   const [incomeCategories, setIncomeCategories] = useState([]);
   const { incomes, setIncomes } = useContext(GlobalContext);
   const [incomeFilterCategoryId, setIncomeFilterCategoryId] = useState("none");
+  const [incomeFilterCategoryName,setIncomeFilterCategoryName] = useState("none");
   const [sortIncome, setSortIncome] = useState(0);
   const [sortIncomeDate, setSortIncomeDate] = useState(0);
   const [isSortIncomeAmount,setIsSortIncomeAmount] = useState(true);
   const [isSortIncomeDate,setIsSortIncomeDate] = useState(false);
+  const [totalIncome,setTotalIncome] = useState(0);
+  
 
-  const addIncomeCategory = async (req, res) => {
+  const addIncomeCategory = async () => {
     try {
       const response = await axios.post(
         `${backendUrl}/income/addIncomeCategory`,
@@ -49,7 +52,7 @@ const Income = () => {
     }
   };
 
-  const getIncomeCategories = async (req, res) => {
+  const getIncomeCategories = async () => {
     try {
       const response = await axios.get(
         `${backendUrl}/income/getIncomeCategories`,
@@ -135,6 +138,38 @@ const Income = () => {
     }
   };
 
+  const getTotalIncomes = ()=>{
+    let total = 0;
+    for(let i = 0;i<incomes.length;i++){
+      if(incomeFilterCategoryId==="none"){
+        total+=incomes[i].incomeAmount;
+      } else {
+        if(incomes[i].incomeCategoryId===incomeFilterCategoryId){
+          total+=incomes[i].incomeAmount;
+        }
+      }
+    }
+    setTotalIncome(total);
+  }
+
+  const getIncomeCategoryNameById = async () => {
+    try {
+      const response = await axios.post(
+        `${backendUrl}/income/getIncomeCategoryNameById`,
+        {
+          incomeCategoryId:incomeFilterCategoryId,
+        },
+        { withCredentials: true }
+      );
+      console.log(response);
+      if (response.status === 200) {
+        setIncomeFilterCategoryName(response.data.categoryName);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getSortedIncomesByDate();
   }, [sortIncomeDate]);
@@ -142,6 +177,11 @@ const Income = () => {
   useEffect(() => {
     getSortedIncomes();
   }, [sortIncome]);
+
+  useEffect(()=>{
+    getTotalIncomes();
+    getIncomeCategoryNameById();
+  },[incomes,incomeFilterCategoryId])
 
   useEffect(() => {
     getIncomeCategories();
@@ -332,6 +372,9 @@ const Income = () => {
               />
             );
           })}
+          {incomes.length!==0 && <div className="flex items-enter p-2 text-xl text-blue-500 border-2 shadow-lg rounded-lg">
+            <p>Total income {incomeFilterCategoryId==="none" ? '' : (incomeFilterCategoryName)} : {totalIncome} </p>
+          </div>}
       </div>
     </>
   );
